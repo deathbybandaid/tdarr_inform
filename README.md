@@ -1,6 +1,6 @@
 # tdarr_inform
 
-This is is a custom script for Sonarr and Radarr to inform Tdarr of new/changed/deleted files without relying on filesystem events or frequent disk scanning.
+This is is a custom script for Sonarr and Radarr to inform Tdarr of new/changed/deleted files without relying on filesystem events or frequent disk scanning. Bigger Explanation below.
 
 To use:
 
@@ -15,3 +15,16 @@ To use:
 5) Set the path to the script
 
 ## Side Note, There is untested support for Whisparr here, but I don't download that kind of linux ISO to know
+
+
+# Why this exists
+
+Tdarr is able to listen to filesystem events and/or scan the filesystem periodically.
+
+When you store your files on a File Server or NAS, and use samba/CIFS, you lose out on filesystem events, requiring Tdarr to be dependent on frequent scans, which for large libraries can waste resources and consume a lot of time.
+
+This tool is designed to let sonarr/radarr directly communicate with tdarr, much like cloudbox/autoscan is able to communicate between sonarr/radarr and plex/emby/jellyfin.
+
+Using tools like this allows you to reduce the file scans to 6hours/12hours/daily instead of very frequently.
+
+Adding a direct communication between apps, allows for tdarr to convert new media prior to an end-user streaming content from your media server.
