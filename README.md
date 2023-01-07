@@ -14,7 +14,10 @@ To use:
 4) Select Import,Upgrade,Rename,Delete(multiple versions of delete)
 5) Set the path to the script
 
-## Side Note, There is untested support for Whisparr here, but I don't download that kind of linux ISO to know
+# Side Notes
+
+* There is untested support for Whisparr here, but I don't download that kind of linux ISO to know
+* Sonarr/Radarr/Whisparr file paths must be accessible to tdarr. This script does/will not "translate" paths.
 
 
 # Why this exists
