@@ -13,3 +13,5 @@ To use:
 3) Custom Script
 4) Select Import,Upgrade,Rename,Delete(multiple versions of delete)
 5) Set the path to the script
+
+## Side Note, There is untested support for Whisparr here, but I don't download that kind of linux ISO to know
