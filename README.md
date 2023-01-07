@@ -1,6 +1,6 @@
 # tdarr_inform
 
-This is is a custom script for Sonarr and Radarr to inform Tdarr of new/changed/deleted files without reling on filesystem events or frequent disk scanning.
+This is is a custom script for Sonarr and Radarr to inform Tdarr of new/changed/deleted files without relying on filesystem events or frequent disk scanning.
 
 To use:
 
