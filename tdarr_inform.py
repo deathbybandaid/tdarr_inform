@@ -30,6 +30,12 @@ expected_paths_env_variables = {
                                             "MovieFileDelete": ["radarr_moviefile_path"],
                                             "MovieDelete": ["radarr_movie_path"]
                                             },
+                                "whisparr": {
+                                            "Download": ["whisparr_moviefile_path", "whisparr_deletedpaths"],
+                                            "Rename": ["whisparr_moviefile_paths", "whisparr_moviefile_previouspaths"],
+                                            "MovieFileDelete": ["whisparr_moviefile_path"],
+                                            "MovieDelete": ["whisparr_movie_path"]
+                                            }
                                 }
 
 
@@ -124,14 +130,16 @@ def main():
 
     arr = {"type": None, "event_type": None, "file_paths": []}
 
-    # Determine if called from Sonarr or Radarr
+    # Determine if called from Sonarr, Radarr, or Whisparr
     # Else, exit
     if "sonarr_eventtype" in os.environ:
         arr["type"] = "sonarr"
     elif "radarr_eventtype" in os.environ:
         arr["type"] = "radarr"
+    elif "whisparr_eventtype" in os.environ:
+        arr["type"] = "whisparr"
     else:
-        loggit("Could not Detect Radarr or Sonarr", True)
+        loggit("Could not Detect a supported *arr", True)
         sys.exit(0)
 
     # What event_type was recieved
