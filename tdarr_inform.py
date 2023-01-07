@@ -10,9 +10,9 @@ script_settings = {
                                 "url": "http://CHANGEME:8265",
                                 },
                     "logging": {
-                                "log_file": True,
+                                "log_file": False,
                                 "log_file_path": os.path.join(os.path.dirname(os.path.realpath(__file__)), "debug.log"),
-                                "output_level": 1
+                                "output_level": 0
                                 }
                     }
 """Dont't edit below"""
