@@ -171,7 +171,7 @@ def main():
             loggit("No exact match found, searching for library ID from Reverse Recursive Directory matching")
             dbID = do_reverse_recursive_directory_search(file_path)
         if not dbID:
-            loggit("No match found")
+            loggit("No match found for %s" % file_path)
         else:
             if dbID not in list(inform_dict.keys()):
                 inform_dict[dbID] = []
