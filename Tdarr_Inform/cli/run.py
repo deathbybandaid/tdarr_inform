@@ -55,7 +55,7 @@ def run(args, settings, logger, script_dir, versions, web):
 
     if args.useenv:
         logger.info("tdarr_inform called with no arguments, defaulting to ENV Mode")
-        Tdarr_Inform.handlers.envmode.ENVmode(settings, logger, web)
+        Tdarr_Inform.envmode.ENVmode(settings, logger, web)
     else:
         logger.info("")
 
