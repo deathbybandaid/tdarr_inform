@@ -10,7 +10,7 @@ import Tdarr_Inform.logger
 import Tdarr_Inform.versions
 import Tdarr_Inform.web
 
-import Tdarr_Inform.envmode
+import Tdarr_Inform.handlers
 
 NO_ERR_CODE = 0
 ERR_CODE = 1
@@ -22,17 +22,18 @@ def build_args_parser(script_dir):
     Build argument parser for tdarr_inform.
     """
 
-    if not len(sys.argv) > 1:
-        useenv = True
+    if (not len(sys.argv) > 1):
+        default_mode = "custom_script"
     else:
-        useenv = False
+        default_mode = "manual"
 
     parser = argparse.ArgumentParser(description='tdarr_inform')
     parser.add_argument('-c', '--config', dest='cfg', type=str, default=pathlib.Path(script_dir).joinpath('config.ini'), required=False, help='configuration file to load.')
     parser.add_argument('--setup', dest='setup', type=str, required=False, nargs='?', const=True, default=False, help='Setup Configuration file.')
     parser.add_argument('--iliketobreakthings', dest='iliketobreakthings', type=str, nargs='?', const=True, required=False, default=False, help='Override Config Settings not meant to be overridden.')
     parser.add_argument('-v', '--version', dest='version', type=str, required=False, nargs='?', const=True, default=False, help='Show Version Number.')
-    parser.add_argument('--useenv', dest='useenv', type=str, required=False, nargs='?', const=True, default=useenv, help='Script will use ENV variables, and is not run in server mode.')
+    parser.add_argument('--mode', dest='mode', type=str, required=False, nargs='?', default=default_mode, help='The mode the Script will use: ENV variables, manual entry, server mode.')
+    parser.add_argument('--filepath', dest='filepath', type=str, required=False, nargs='?', default=None, help='File path, to be used with --mode manual.')
 
     return parser.parse_args()
 
@@ -53,13 +54,18 @@ def get_version(script_dir):
 
 def run(args, settings, logger, script_dir, versions, web):
 
-    if args.useenv:
-        logger.info("tdarr_inform called with no arguments, defaulting to ENV Mode")
-        Tdarr_Inform.envmode.ENVmode(settings, logger, web)
-    else:
-        logger.info("")
+    valid_modes = ["custom_script", "manual"]
+    if args.mode not in valid_modes:
+        logger.error("Invalid mode: %s" % args.mode)
+        return ERR_CODE
 
-    return 0
+    logger.info("tdarr_inform called with %s mode" % args.mode)
+    if args.mode == "custom_script":
+        Tdarr_Inform.handlers.CustomScript(settings, logger, web)
+    elif args.mode == "manual":
+        Tdarr_Inform.handlers.Manual(settings, logger, web, args.filepath)
+
+    return NO_ERR_CODE
 
 
 def start(args, script_dir):

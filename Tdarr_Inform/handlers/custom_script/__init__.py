@@ -4,7 +4,7 @@ import sys
 from Tdarr_Inform.tdarr import Tdarr
 
 
-class ENVmode():
+class CustomScript():
 
     def __init__(self, settings, logger, web):
         """
@@ -56,8 +56,8 @@ class ENVmode():
                 env_paths.append(env_path)
 
         if not len(env_paths):
-            self.logger.error("No File paths retrieved fron Environment variables")
-            raise Exception("No File paths retrieved fron Environment variables")
+            self.logger.error("No File paths retrieved from Environment variables")
+            raise Exception("No File paths retrieved from Environment variables")
 
         return env_paths
 
