@@ -1,0 +1,19 @@
+{
+  "tdarr":{
+          "address":{
+                    "value": "localhost",
+                    "config_file": true,
+                    "config_web": true
+                },
+          "port":{
+                    "value": 8265,
+                    "config_file": true,
+                    "config_web": true
+                },
+          "ssl":{
+                    "value": false,
+                    "config_file": true,
+                    "config_web": true
+                }
+  }
+}

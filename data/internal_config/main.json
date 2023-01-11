@@ -1,0 +1,11 @@
+{
+  "main":{
+          "cache_dir":{
+                      "value": "none",
+                      "config_file": true,
+                      "config_web": "visible_only",
+                      "valid_options": "path",
+                      "description": "The path to store the database, logs, and other files."
+                    }
+  }
+}

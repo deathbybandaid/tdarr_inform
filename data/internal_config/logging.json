@@ -1,0 +1,18 @@
+{
+  "logging":{
+          "level":{
+                    "value": "INFO",
+                    "config_file": true,
+                    "config_web": true,
+                    "valid_options": "CRITICAL,ERROR,WARNING,INFO,DEBUG",
+                    "description": "Determines the level of logging to file as well as console output."
+                },
+          "format":{
+                    "value": "none",
+                    "config_file": true,
+                    "config_web": false,
+                    "valid_options": "str",
+                    "description": "Determines the format of logging to file as well as console output."
+                }
+  }
+}
