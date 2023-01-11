@@ -89,7 +89,7 @@ def start(args, script_dir):
             spaceprefix = " "
         loading_versions_string += "%s%s %s" % (spaceprefix, core_versions[item]["name"], core_versions[item]["version"])
 
-    logger.noob("Loading %s" % loading_versions_string)
+    logger.info("Loading %s" % loading_versions_string)
 
     logger.info("Importing Core config values from Configuration File: %s" % settings.config_file)
 
