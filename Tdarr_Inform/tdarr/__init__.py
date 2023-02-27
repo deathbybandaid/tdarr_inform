@@ -58,12 +58,25 @@ class Tdarr():
     def do_reverse_recursive_directory_search(self, arr_file_path):
         dbID = None
         arr_dir_path = os.path.dirname(arr_file_path)
-        while arr_dir_path != os.path.abspath(os.sep) and not arr_dir_path.endswith(":\\"):
+        checked_paths = []
+        while self.check_path(arr_dir_path, checked_paths):
             arr_dir_path = os.path.dirname(arr_dir_path)
             dbID = self.do_file_search(arr_dir_path)
+            checked_paths.append(arr_dir_path)
             if dbID:
                 break
         return dbID
+
+    def check_path(self, arr_dir_path, checked_paths):
+        if arr_dir_path in checked_paths:
+            return False
+        if not self.config.dict['tdarr']["accept_root_drive_path"]:
+            if arr_dir_path != os.path.abspath(os.sep):
+                return True
+            elif not arr_dir_path.endswith(":\\"):
+                return True
+            return False
+        return True
 
     def do_tdarr_inform(self, dbID, file_paths):
         headers = {"content-type": "application/json"}

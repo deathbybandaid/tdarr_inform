@@ -14,6 +14,11 @@
                     "value": false,
                     "config_file": true,
                     "config_web": true
+                },
+          "accept_root_drive_path":{
+                    "value": true,
+                    "config_file": true,
+                    "config_web": true
                 }
   }
 }
