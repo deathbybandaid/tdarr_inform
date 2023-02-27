@@ -29,10 +29,10 @@ This is a custom script for Sonarr/Radarr/Whisparr to inform Tdarr of new/change
 
 Tdarr is able to listen to filesystem events and/or scan the filesystem periodically.
 
-When you store your files on a File Server or NAS, and use samba/CIFS, you lose out on filesystem events, requiring Tdarr to be dependent on frequent scans, which for large libraries can waste resources and consume a lot of time.
+When you store your files on a File Server or NAS, and use samba/CIFS, you lose out on filesystem events, requiring Tdarr to be dependent on frequent scans, which for large libraries can waste resources and consume a lot of time. If your applications are able to receive filesystem events, tdarr_inform may be of little help for your setup.
 
 This tool is designed to let Sonarr/Radarr/Whisparr directly communicate with Tdarr, much like [Cloudbox/autoscan](https://github.com/Cloudbox/autoscan) is able to communicate between Sonarr/Radarr/Whisparr/Lidarr and Plex/Emby/Jellyfin.
 
 Using tools like this allows you to reduce the file scans to 6hours/12hours/daily instead of very frequently.
 
-Adding a direct communication between apps, allows for Tdarr to convert new media prior to an end-user streaming content from your media server.
+Adding a direct communication between apps, allows for Tdarr to convert new media more quickly, and often prior to the media server detecting changed files. This can usually help with end-users streaming content from your media server before the content is handled by Tdarr.
