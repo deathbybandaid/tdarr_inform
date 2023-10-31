@@ -108,6 +108,7 @@ class Tdarr():
                       }
                     }
                   }
+        self.logger.info("Sending %s path(s) to tdarr with Library ID %s." % (len(file_paths), dbID))
         response = self.web.post("%s/api/v2/scan-files" % self.address_without_creds, json=payload, headers=headers)
         self.logger.info("Tdarr response: %s" % response.text)
 
