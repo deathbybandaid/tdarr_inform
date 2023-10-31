@@ -23,7 +23,7 @@ class Tdarr():
             self.logger.info("Searching tdarr API for item's library ID")
 
             # Perform search by exact path. Often expect failure especially with new files
-            self.logger.info("Checking for Match by directory path: %s" % file_path)
+            self.logger.info("Checking for Match by file path: %s" % file_path)
             dbID = self.do_file_search(file_path)
 
             # No precise match found, search by directories starting with file's folder path and going backwards
