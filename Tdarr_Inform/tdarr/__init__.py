@@ -16,16 +16,28 @@ class Tdarr():
         # Search Tdarr API for library database ID's
         # Dedupe dbID/file_path combinations
         inform_dict = {}
+
+        # Cycle through input list and append inform_dict
         for file_path in file_path_list:
             self.logger.info("Event Item: %s" % file_path)
             self.logger.info("Searching tdarr API for item's library ID")
+
+            # Perform search by exact path. Often expect failure especially with new files
+            self.logger.info("Checking for Match by directory path: %s" % file_path)
             dbID = self.do_file_search(file_path)
+
+            # No precise match found, search by directories starting with file's folder path and going backwards
             if not dbID:
-                self.logger.error("No exact match found, searching for library ID from Reverse Recursive Directory matching")
+                self.logger.warning("No exact match found, searching for library ID from Reverse Recursive Directory matching")
                 dbID = self.do_reverse_recursive_directory_search(file_path)
+
+            # Absolutely no match possible
             if not dbID:
                 self.logger.error("No match found for %s" % file_path)
+
+            # Success
             else:
+                self.logger.info("Found Library ID %s" % dbID)
                 if dbID not in list(inform_dict.keys()):
                     inform_dict[dbID] = []
                 if file_path not in inform_dict[dbID]:
@@ -60,11 +72,18 @@ class Tdarr():
         arr_dir_path = os.path.dirname(arr_file_path)
         checked_paths = []
         while self.check_path(arr_dir_path, checked_paths):
-            arr_dir_path = os.path.dirname(arr_dir_path)
+            self.logger.info("Checking for Match by directory path: %s" % arr_dir_path)
             dbID = self.do_file_search(arr_dir_path)
-            checked_paths.append(arr_dir_path)
+
+            # Found
             if dbID:
                 break
+
+            # Continue search
+            self.logger.warn("No match found for directory path: %s" % arr_dir_path)
+            checked_paths.append(arr_dir_path)
+            arr_dir_path = os.path.dirname(arr_dir_path)
+
         return dbID
 
     def check_path(self, arr_dir_path, checked_paths):
