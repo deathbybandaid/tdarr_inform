@@ -1,0 +1,32 @@
+{
+  "web_ui":{
+            "theme":{
+                      "value": "none",
+                      "config_file": true,
+                      "config_web": true,
+                      "valid_options": "str",
+                      "description": "A URL to a CSS file that themes the WebUI."
+                  },
+            "access_level":{
+                      "value": "0",
+                      "config_file": true,
+                      "config_web": true,
+                      "valid_options": "int",
+                      "description": "Adjusts the level of UI complexity for Advanced Users."
+                  },
+            "auto_page_refresh":{
+                      "value": 5,
+                      "config_file": false,
+                      "config_web": false,
+                      "valid_options": "int",
+                      "description": "Adjusts the Automatic Refresh Speed of select pages."
+                  },
+            "pages_to_refresh":{
+                      "value": "",
+                      "config_file": false,
+                      "config_web": false,
+                      "valid_options": "list",
+                      "description": "A Comma Seperated list of pages to enable automatic refresh."
+                  }
+  }
+}

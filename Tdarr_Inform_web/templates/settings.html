@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <h4 style="text-align: center;">Tdarr_Inform_web Settings</h4>
+
+  <h4 style="text-align: center;">Some Settings will require a manual restart.</h4>
+
+  <div style="text-align: center;">
+    <button onclick="location.href='/api/settings?method=restart&redirect=/settings?section={{ conf_section }}'" type="button">Restart Tdarr_Inform_web</button>
+    <p> Note: This may take some time, and you will have to refresh your page.</p>
+  </div>
+  <br>
+
+  <p>
+    {% for conf_section in conf_sections %}
+      <button onclick="location.href='/settings?section={{ conf_section }}'" type="button">{{ conf_section }}</button>
+    {% endfor %}
+  </p>
+
+  <div class="container">
+    <table class="table-scroll">
+      <thead>
+        <tr>
+          <th>Config Name</th>
+          <th>Config Default Value</th>
+          <th>Config Value</th>
+          <th>Action</th>
+          <th>Helpful Info</th>
+        </tr>
+      </thead>
+
+      <tbody class="body-half-screen">
+
+        {% for config_item in list(web_settings_dict[config_section].keys()) %}
+          <tr>
+            <input type="hidden" name="id" class="help" value="[{{ config_section }}]{{ config_item }}">
+            <input type="hidden" name="Description" class="help" value="{{ web_settings_dict[config_section][config_item]["description"] }}">
+            <input type="hidden" name="Valid Options" class="help" value="{{ web_settings_dict[config_section][config_item]["valid_options"] }}">
+            <input type="hidden" name="Default Value" class="help" value="{{ web_settings_dict[config_section][config_item]["value_default"] }}">
+
+            <td>{{ config_item }}</td>
+            <td>{{ web_settings_dict[config_section][config_item]["value_default"] }}</td>
+
+            {% if web_settings_dict[config_section][config_item]["configurable"] %}
+              <td>
+                <form method="post" action="/api/settings?method=update&redirect=/settings?section={{ config_section }}">
+                  <input type="hidden" name="config_section" value="{{ config_section }}">
+                  <input type="hidden" name="config_name" value="{{ config_item }}">
+                  <input type="hidden" name="config_default" value="{{ web_settings_dict[config_section][config_item]["value_default"] }}">
+                  {% if web_settings_dict[config_section][config_item]["hide"] %}
+                    <input type="text" size="25" name="config_value" value="**************">
+                  {% else %}
+                    <input type="text" size="25" name="config_value" value="{{ web_settings_dict[config_section][config_item]["value"] }}">
+                  {% endif %}
+              </td>
+              <td style="display:flex;">
+                <span style="margin:auto">
+                  <input type="submit" value="Update">
+                  </form>
+                </span>
+                <form style="margin:auto">
+                  <input type="hidden" name="config_section" value="{{ config_section }}">
+                  <input type="hidden" name="config_name" value="{{ config_item }}">
+                  <input type="hidden" name="config_value" value="{{ web_settings_dict[config_section][config_item]["value_default"] }}">
+                  <input type="hidden" name="config_default" value="{{ web_settings_dict[config_section][config_item]["value_default"] }}">
+                  <input type="submit" value="Reset">
+                </form>
+              </td>
+            {% else %}
+              <td></td>
+              <td></td>
+            {% endif %}
+
+            {% if web_settings_dict[config_section][config_item]["valid_options"] or web_settings_dict[config_section][config_item]["description"] %}
+              <td>
+                <button type="entry" id="settings_help" value="[{{ config_section }}]{{ config_item }}">Help</button>
+              </td>
+            {% else %}
+              <td></td>
+            {% endif %}
+
+          </tr>
+          <input type="hidden" name="id" class="help" value="dummy">
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}

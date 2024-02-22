@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <h4 style="text-align: center;">Scheduler</h4>
+
+  <div class="container">
+    <table class="table-scroll">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Last Run</th>
+          <th>Next Run</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody class="body-half-screen">
+        {% for jobdict in jobsdicts %}
+          <tr>
+            <td>{{ jobdict["name"] }}</td>
+            <td>{{ jobdict["last_run"] }}</td>
+            <td>{{ jobdict["next_run"] }}</td>
+            <td>
+              <form method="post" action="/api/scheduler?method=run&redirect=/scheduler">
+                <input type="hidden" name="job_tag" value="{{ jobdict["name"] }}">
+                <input type="submit" value="Run">
+              </form>
+              <form method="post" action="/api/scheduler?method=remove&redirect=/scheduler">
+                <input type="hidden" name="job_tag" value="{{ jobdict["name"] }}">
+                <input type="submit" value="Remove">
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="container">
+    <table class="table-scroll">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Interval</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody class="body-half-screen">
+        {% for jobdict in unscheduled_job_items %}
+          <tr>
+            <td>{{ jobdict["name"] }}</td>
+            <td>{{ jobdict["type"] }}</td>
+            <td>{{ jobdict["interval"] }}</td>
+            <td>
+              <form method="post" action="/api/scheduler?method=add&redirect=/scheduler">
+                <input type="hidden" name="name" value="{{ jobdict["name"] }}">
+                <input type="hidden" name="type" value="{{ jobdict["type"] }}">
+                <input type="hidden" name="interval" value="{{ jobdict["interval_epoch"] }}">
+                <input type="submit" value="Add">
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
+{% endblock %}

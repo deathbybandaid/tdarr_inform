@@ -1,0 +1,46 @@
+{
+  "tdarr_inform":{
+          "address":{
+                    "value": "0.0.0.0",
+                    "config_file": true,
+                    "config_web": true,
+                    "valid_options": "str",
+                    "description": "The IP address to listen on. Can be the IP of the device, or 0.0.0.0"
+                },
+          "port":{
+                  "value": 5004,
+                  "config_file": true,
+                  "config_web": true,
+                  "valid_options": "int",
+                  "description": "The port to listen at."
+                },
+          "require_auth":{
+                          "value": false,
+                          "config_file": true,
+                          "config_web": true,
+                          "valid_options": "bool",
+                          "description": "Currently Unused Authentication setting."
+                        },
+          "friendlyname":{
+                    "value": "tdarr_inform",
+                    "config_file": true,
+                    "config_web": true,
+                    "valid_options": "str",
+                    "description": "The friendly name for this instance of Tdarr_Inform."
+                },
+          "versions_check_interval":{
+                    "value": 10800,
+                    "config_file": true,
+                    "config_web": true,
+                    "valid_options": "int",
+                    "description": "Determines How often to scan for new versions."
+                },
+          "humanized_time_granularity":{
+                    "value": "second",
+                    "config_file": true,
+                    "config_web": true,
+                    "valid_options": "year,day,hour,minute,second",
+                    "description": "Determines the granularity of Humanized Time Output."
+                }
+  }
+}

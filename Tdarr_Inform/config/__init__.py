@@ -42,12 +42,18 @@ class Config():
         """
 
         data_dir = pathlib.Path(script_dir).joinpath('data')
+        Tdarr_Inform_web_dir = pathlib.Path(script_dir).joinpath('Tdarr_Inform_web')
+        www_dir = pathlib.Path(Tdarr_Inform_web_dir).joinpath('www_dir')
 
         self.internal["paths"] = {
                                     "script_dir": script_dir,
                                     "data_dir": data_dir,
                                     "cache_dir": pathlib.Path(data_dir).joinpath('cache'),
                                     "internal_config": pathlib.Path(data_dir).joinpath('internal_config'),
+                                    "Tdarr_Inform_web_dir": Tdarr_Inform_web_dir,
+                                    "www_dir": www_dir,
+                                    "www_templates_dir": pathlib.Path(Tdarr_Inform_web_dir).joinpath('templates'),
+                                    "font": pathlib.Path(data_dir).joinpath('garamond.ttf'),
                                     }
 
         for conffile in os.listdir(self.internal["paths"]["internal_config"]):
@@ -55,6 +61,9 @@ class Config():
             conffilepath = os.path.join(self.internal["paths"]["internal_config"], conffile)
             if str(conffilepath).endswith(".json"):
                 self.read_json_config(conffilepath)
+
+        # Web Server Conf
+        self.read_json_config(pathlib.Path(self.internal["paths"]["Tdarr_Inform_web_dir"]).joinpath("web_ui_conf.json"))
 
     def user_config_core(self):
         """
@@ -178,6 +187,8 @@ class Config():
         self.internal["paths"]["logs_dir"] = logs_dir
         if not logs_dir.is_dir():
             logs_dir.mkdir()
+
+        self.dict["database"]["path"] = pathlib.Path(cache_dir).joinpath('tdarr_inform.db')
 
     def check_config_file(self):
         """
