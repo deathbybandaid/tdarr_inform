@@ -15,7 +15,7 @@ class Versions():
         self.config = settings
         self.logger = logger
 
-        self.github_tdarr_inform_core_info_url = "https://raw.githubusercontent.com/deathbybandaid/tdarr_inform/main/version.json"
+        self.github_tdarr_inform_core_info_url = "https://raw.githubusercontent.com/deathbybandaid/tdarr_inform/master/version.json"
 
         self.dict = {}
 
@@ -23,10 +23,32 @@ class Versions():
 
         self.register_env()
 
-    def secondary_setup(self, web):
-        self.web = web
+        self.update_url = "/api/versions?method=check"
 
-        self.core_versions = {}
+    def secondary_setup(self, db, web, scheduler):
+        self.db = db
+        self.web = web
+        self.scheduler = scheduler
+
+        self.core_versions = self.db.get_tdarr_inform_value("core_versions", "dict") or {}
+
+    def sched_init(self, tdarr_inform):
+        """
+        The Scheduled update method.
+        """
+
+        self.api = tdarr_inform.api
+        versions_check_interval = self.config.dict["tdarr_inform"]["versions_check_interval"]
+        if versions_check_interval:
+            self.scheduler.every(versions_check_interval).seconds.do(
+                self.scheduler.job_wrapper(self.get_online_versions)).tag("Versions Update")
+
+    def sched_update(self):
+        """
+        Use an API thread to update Versions listing.
+        """
+
+        self.api.threadget(self.update_url)
 
     def get_online_versions(self):
         """
@@ -46,7 +68,10 @@ class Versions():
         if core_json:
             for key in list(core_json.keys()):
                 core_versions[key] = {"name": key, "version": core_json[key], "type": "core"}
+            self.db.set_tdarr_inform_value("core_versions", "dict", core_versions)
             self.core_versions = core_versions
+
+        self.logger.debug("Checking for Online Plugin Information")
 
     def get_core_versions(self):
         returndict = {}

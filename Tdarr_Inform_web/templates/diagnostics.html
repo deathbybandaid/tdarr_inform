@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <h4 style="text-align: center;">Tdarr_Inform_web Diagnostic Links</h4>
+
+  <p>
+    {% for route_group in route_groups %}
+      <button onclick="location.href='/diagnostics?section={{ route_group }}'" type="button">{{ route_group }}</button>
+    {% endfor %}
+  </p>
+
+  <div class="container">
+    <table class="table-medium center action-col">
+      <tbody>
+        <tr>
+          <th>Link</th>
+          <th>Methods</th>
+        </tr>
+
+        {% for button_item in button_dict[route_group] %}
+          <tr>
+            <td>
+              {% if button_item["button"] %}
+                <button onclick="location.href='{{ button_item["link"] }}'" type="button">{{ button_item["label"] }}</button>
+              {% else %}
+                <a>{{ button_item["link"] }}</a>
+              {% endif %}
+            </td>
+            <td><a>{{ button_item["methods"] }}</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}

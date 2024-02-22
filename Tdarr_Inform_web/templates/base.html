@@ -1,0 +1,82 @@
+<html>
+
+  <head>
+    <title>{{ tdarr_inform.config.dict["tdarr_inform"]["friendlyname"] }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style.css" rel="stylesheet">
+
+    <script type="text/javascript" src="/brython.js"></script>
+    <script type="text/javascript" src="/brython_stdlib.js"></script>
+    <script type="text/python" src="brython.bry"></script>
+
+    {% if session["endpoint_name"] in session["refresh_pages"] %}
+      {% set auto_page_refresh = tdarr_inform.config.dict["web_ui"]["auto_page_refresh"] %}
+      <meta http-equiv="refresh" content="{{ auto_page_refresh }}">
+    {% endif %}
+
+  </head>
+
+  <body onload="brython({debug: 1, indexedDB: false})">
+
+    <h1 class="center" style="text-align:center">
+      <span style="text-decoration: underline;"><strong><em>{{ tdarr_inform.config.dict["tdarr_inform"]["friendlyname"] }}</em></strong>
+      </span>
+      <img class="pull-left" src="/favicon.ico" alt="Tdarr_Inform_web Logo" width="100" height="100">
+    </h1>
+    {% set retmessage = request.args.get('retmessage', default=None) %}
+    {% if retmessage %}
+      <p></p>
+      <p class="pull-left" style="font-size:1em">{{ retmessage }}</p>
+    {% endif %}
+
+    {% set access_level = tdarr_inform.config.dict["web_ui"]["access_level"] %}
+    {% if not access_level %}
+      {% set access_level = 0 %}
+    {% endif %}
+
+    <form  class="pull-right" style="padding: 5px;"  method="post" action="/api/settings?method=update&redirect={{ request.path }}">
+      <input type="hidden" name="config_section" value="web_ui">
+      <input type="hidden" name="config_name" value="access_level">
+
+      {% if tdarr_inform.config.dict["web_ui"]["access_level"] == 2 %}
+        <input type="hidden" name="config_value" value=0>
+      {% elif tdarr_inform.config.dict["web_ui"]["access_level"] == 1 %}
+        <input type="hidden" name="config_value" value=2>
+      {% else %}
+        <input type="hidden" name="config_value" value=1>
+      {% endif %}
+
+      <input type="hidden" name="config_default" value=0>
+      {% if tdarr_inform.config.dict["web_ui"]["access_level"] == 2 %}
+        <a><input type="submit" value="Extra Advanced"></a>
+      {% elif tdarr_inform.config.dict["web_ui"]["access_level"] == 1 %}
+        <a><input type="submit" value="Advanced"></a>
+      {% else %}
+        <a><input type="submit" value="Basic"></a>
+      {% endif %}
+    </form>
+
+    <br><br>
+    <p></p>
+
+    <div>
+      <button onclick="location.href='/index'" type="button">Tdarr_Inform_web</button>
+
+      {% for page_dict in session["route_list"]["pages"] %}
+        {% if session["route_list"]["pages"][page_dict]["name"] != "page_index_html" and access_level >= session["route_list"]["pages"][page_dict]["endpoint_access_level"] %}
+          <button onclick="location.href='{{ session["route_list"]["pages"][page_dict]["endpoints"][0] }}'" type="button">{{ session["route_list"]["pages"][page_dict]["pretty_name"] }}</button>
+        {% endif %}
+      {% endfor %}
+
+      <hr align="center" width="100%">
+    </div>
+
+    {% for page_dict in session["route_list"]["tool_pages"] %}
+      {% if session["route_list"]["tool_pages"][page_dict]["name"] != "page_index_html" and access_level >= session["route_list"]["tool_pages"][page_dict]["endpoint_access_level"] %}
+        <button onclick="location.href='{{ session["route_list"]["tool_pages"][page_dict]["endpoints"][0] }}'" type="button">{{ session["route_list"]["tool_pages"][page_dict]["pretty_name"] }}</button>
+      {% endif %}
+    {% endfor %}
+
+    {% block content %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,47 @@
+from flask import request, render_template, session
+
+
+class Versions_HTML():
+    endpoints = ["/versions", "/versions.html"]
+    endpoint_name = "page_versions_html"
+    endpoint_access_level = 1
+    endpoint_category = "tool_pages"
+    pretty_name = "Versions"
+
+    def __init__(self, tdarr_inform):
+        self.tdarr_inform = tdarr_inform
+
+    def __call__(self, *args):
+        return self.handler(*args)
+
+    def handler(self, *args):
+
+        version_dict = {}
+        for key in list(self.tdarr_inform.versions.dict.keys()):
+            version_dict[key] = self.tdarr_inform.versions.dict[key]
+            online_version = "N/A"
+            if key in list(self.tdarr_inform.versions.core_versions.keys()):
+                online_version = self.tdarr_inform.versions.core_versions[key]["version"]
+            version_dict[key]["online_version"] = online_version
+
+        # Sort the Version Info
+        sorted_version_dict = {}
+        for item in list(version_dict.keys()):
+            if version_dict[item]["type"] == "Tdarr_Inform_web":
+                sorted_version_dict[item] = version_dict[item]
+        sorted_version_list = sorted(version_dict, key=lambda i: (version_dict[i]['type'], version_dict[i]['name']))
+        for version_item in sorted_version_list:
+            if version_dict[version_item]["type"] != "Tdarr_Inform_web":
+                sorted_version_dict[version_item] = version_dict[version_item]
+
+        available_version_dict = {}
+
+        # Sort the Version Info
+        sorted_available_version_list = sorted(available_version_dict, key=lambda i: (available_version_dict[i]['type'], available_version_dict[i]['name']))
+        sorted_available_version_dict = {}
+        for version_item in sorted_available_version_list:
+            if version_item:
+                sorted_available_version_dict[version_item] = available_version_dict[version_item]
+                sorted_available_version_dict[version_item]["url"] = "https://github.com/Tdarr_Inform_web/%s" % version_item
+
+        return render_template('versions.html', request=request, session=session, tdarr_inform=self.tdarr_inform, version_dict=sorted_version_dict, available_version_dict=sorted_available_version_dict, list=list)

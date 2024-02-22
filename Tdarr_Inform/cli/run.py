@@ -3,14 +3,18 @@ import sys
 import pathlib
 import argparse
 import json
+import time
 
+from Tdarr_Inform import Tdarr_Inform_OBJ
 import Tdarr_Inform.exceptions
 import Tdarr_Inform.config
 import Tdarr_Inform.logger
 import Tdarr_Inform.versions
 import Tdarr_Inform.web
-
+import Tdarr_Inform.scheduler
 import Tdarr_Inform.handlers
+from Tdarr_Inform.db import Tdarr_Informdb
+from Tdarr_Inform.time_manager import Time_Manager
 
 NO_ERR_CODE = 0
 ERR_CODE = 1
@@ -52,9 +56,9 @@ def get_version(script_dir):
     return versions_string
 
 
-def run(args, settings, logger, script_dir, versions, web):
+def run(args, settings, tdarr_inform_time, logger, db, script_dir, Tdarr_Inform_web, versions, web, scheduler, deps):
 
-    valid_modes = ["custom_script", "manual"]
+    valid_modes = ["custom_script", "manual", "server"]
     if args.mode not in valid_modes:
         logger.error("Invalid mode: %s" % args.mode)
         return ERR_CODE
@@ -64,11 +68,46 @@ def run(args, settings, logger, script_dir, versions, web):
         Tdarr_Inform.handlers.CustomScript(settings, logger, web)
     elif args.mode == "manual":
         Tdarr_Inform.handlers.Manual(settings, logger, web, args.filepath)
+    elif args.mode == "server":
+
+        tdarr_inform = Tdarr_Inform_OBJ(settings, tdarr_inform_time, logger, db, versions, web, scheduler, deps)
+        tdarr_informweb = Tdarr_Inform_web.Tdarr_Inform_web_HTTP_Server(tdarr_inform)
+
+        versions.sched_init(tdarr_inform)
+
+        try:
+
+            # Start Flask Thread
+            tdarr_informweb.start()
+
+            # Run Scheduled Jobs thread
+            tdarr_inform.scheduler.tdarr_inform_self_add(tdarr_inform)
+            tdarr_inform.scheduler.run()
+
+            # Perform Startup Tasks
+            tdarr_inform.scheduler.startup_tasks()
+
+            logger.info("Tdarr_Inform and Tdarr_Inform_web should now be running and accessible via the web interface at %s" % tdarr_inform.api.base)
+            if settings.dict["logging"]["level"].upper() == "NOOB":
+                logger.info("Set your [logging]level to INFO if you wish to see more logging output.")
+
+            # wait forever
+            restart_code = "restart"
+            while tdarr_inform.threads["flask"].is_alive():
+                time.sleep(1)
+
+            if restart_code in ["restart"]:
+                logger.info("Tdarr_Inform has been signaled to restart.")
+
+            return restart_code
+
+        except KeyboardInterrupt:
+            return ERR_CODE_NO_RESTART
 
     return NO_ERR_CODE
 
 
-def start(args, script_dir):
+def start(args, script_dir, tdarr_inform_time, Tdarr_Inform_web, deps):
     """
     Get Configuration for tdarr_inform and start.
     """
@@ -104,29 +143,43 @@ def start(args, script_dir):
     # Continue non-core settings setup
     settings.secondary_setup()
 
+    # add config to time manager
+    tdarr_inform_time.setup(settings, logger)
+
+    # Setup Database
+    db = None
+    if Tdarr_Inform_web:
+        db = Tdarr_Informdb(settings, logger)
+
     logger.debug("Setting Up shared Web Requests system.")
     web = Tdarr_Inform.web.WebReq()
 
+    scheduler = None
+    if Tdarr_Inform_web:
+        scheduler = Tdarr_Inform.scheduler.Scheduler(settings, logger, db)
+
     # Continue Version System Setup
-    versions.secondary_setup(web)
+    versions.secondary_setup(db, web, scheduler)
 
-    return run(args, settings, logger, script_dir, versions, web)
+    return run(args, settings, tdarr_inform_time, logger, db, script_dir, Tdarr_Inform_web, versions, web, scheduler, deps)
 
 
-def config_setup(args, script_dir):
+def config_setup(args, script_dir, Tdarr_Inform_web):
     """
     Setup Config file.
     """
 
-    settings = Tdarr_Inform.config.Config(args, script_dir)
+    settings = Tdarr_Inform.config.Config(args, script_dir, Tdarr_Inform_web)
     settings.setup_user_config()
     return NO_ERR_CODE
 
 
-def main(script_dir):
+def main(script_dir, Tdarr_Inform_web, deps):
     """
     tdarr_inform run script entry point.
     """
+
+    tdarr_inform_time = Time_Manager()
 
     try:
         args = build_args_parser(script_dir)
@@ -137,9 +190,20 @@ def main(script_dir):
             return ERR_CODE
 
         if args.setup:
-            return config_setup(args, script_dir)
+            return config_setup(args, script_dir, Tdarr_Inform_web)
 
-        return start(args, script_dir)
+        if not Tdarr_Inform_web:
+            return start(args, script_dir, tdarr_inform_time, Tdarr_Inform_web, deps)
+
+        else:
+
+            args.mode = "server"
+
+            while True:
+
+                returned_code = start(args, script_dir, tdarr_inform_time, Tdarr_Inform_web, deps)
+                if returned_code not in ["restart"]:
+                    return returned_code
 
     except KeyboardInterrupt:
         sys.stdout.write("\n\nInterrupted")
