@@ -30,7 +30,9 @@ class Versions():
         self.web = web
         self.scheduler = scheduler
 
-        self.core_versions = self.db.get_tdarr_inform_value("core_versions", "dict") or {}
+        self.core_versions = {}
+        if db:
+            self.core_versions = self.db.get_tdarr_inform_value("core_versions", "dict") or {}
 
     def sched_init(self, tdarr_inform):
         """
