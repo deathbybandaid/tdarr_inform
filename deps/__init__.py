@@ -20,9 +20,9 @@ class Dependencies():
 
     def __init__(self, script_dir, web):
         self.script_dir = script_dir
-        core_req_files = ['requirements.txt']
+        core_req_files = [pathlib.Path(script_dir).joinpath('requirements.txt')]
         if web:
-            core_req_files.append('web-requirements.txt')
+            core_req_files.append(pathlib.Path(script_dir).joinpath('web-requirements.txt'))
 
         for reqfile in core_req_files:
             print("Checking and Installing Dependencies from %s" % reqfile)
