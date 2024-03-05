@@ -113,7 +113,7 @@ def start(args, script_dir, tdarr_inform_time, Tdarr_Inform_web, deps):
     """
 
     try:
-        settings = Tdarr_Inform.config.Config(args, script_dir)
+        settings = Tdarr_Inform.config.Config(args, script_dir, Tdarr_Inform_web)
     except Tdarr_Inform.exceptions.ConfigurationError as exerror:
         sys.stderr.write(exerror)
         return ERR_CODE
