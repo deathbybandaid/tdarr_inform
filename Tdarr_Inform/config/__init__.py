@@ -12,7 +12,7 @@ class Config():
     Methods for maintaining the Config.
     """
 
-    def __init__(self, args, script_dir):
+    def __init__(self, args, script_dir, Tdarr_Inform_web):
 
         self.internal = {}
         self.conf_default = {}
