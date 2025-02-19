@@ -11,10 +11,12 @@ import Tdarr_Inform.config
 import Tdarr_Inform.logger
 import Tdarr_Inform.versions
 import Tdarr_Inform.web
-import Tdarr_Inform.scheduler
 import Tdarr_Inform.handlers
-from Tdarr_Inform.db import Tdarr_Informdb
 from Tdarr_Inform.time_manager import Time_Manager
+
+if "server" in sys.argv:
+    import Tdarr_Inform.scheduler
+    from Tdarr_Inform.db import Tdarr_Informdb
 
 NO_ERR_CODE = 0
 ERR_CODE = 1

@@ -1,6 +1,19 @@
 # tdarr_inform
 
-This is a custom script for Sonarr/Radarr/Whisparr to inform Tdarr of new/changed/deleted files without relying on filesystem events or frequent disk scanning. Bigger Explanation below.
+This is a program that bridges the divide between Sonarr/Radarr/Whisparr and Tdarr.
+Typically Tdarr operates by filesystem events, as well as periodic disk scanning.
+This program takes information from Sonarr/Radarr/Whisparr and "Informs" Tdarr of new/changed/deleted files.
+
+## Usage
+
+There are 3 ways to use this program.
+* The original way uses the Custom Script functionality of Sonarr/Radarr/Whisparr.
+* You can also run it via CLI, but this is mostly for testing, and I haven't documented this yet.
+* The NEW MODE is to run it with the `--mode server` argument.
+
+NOTE:
+* Sonarr/Radarr/Whisparr file paths must be accessible to Tdarr. This script does not currently "translate" paths. This may be added in the future.
+
 
 ## Installation
 
@@ -10,10 +23,21 @@ This is a custom script for Sonarr/Radarr/Whisparr to inform Tdarr of new/change
 4) Generate a config file using `python3 tdarr_inform.py --setup`
 5) Modify your `[tdarr]/address` in `config.ini`
 
-## Usage
+For Standalone, you are done. For server mode
 
-* Currently this script only works when it is added to Sonarr/Radarr/Whisparr as a Custom Script. There are some future plans that will add cli methods as well as a web service you can run on a separate machine.
-* Sonarr/Radarr/Whisparr file paths must be accessible to Tdarr. This script does not currently "translate" paths. This may be added in the future.
+### Server Mode
+
+1) Go to Settings/Connect
+2) Add
+3) Webhook
+4) Select Import,Upgrade,Rename,Delete(multiple versions of delete)
+5) Set your ip-address/hostname, port 5004 with a path of /api/events
+  `http://tdarr-inform.local:5004/api/events`
+  `http://127.0.0.1:5004/api/events`
+
+6) Run the program `python3 /path/to/tdarr_inform.py --mode server`
+6.5) You could run it with systemd as well.
+7) In a browser you can play with the web interface.
 
 ### Standalone Script
 
@@ -23,6 +47,8 @@ This is a custom script for Sonarr/Radarr/Whisparr to inform Tdarr of new/change
 3) Custom Script
 4) Select Import,Upgrade,Rename,Delete(multiple versions of delete)
 5) Set the path to the script
+
+6) You might see permissions issues for the script if your sonarr user doesnt have permission to run it. `chown` it to your needs.
 
 
 # Why this exists
