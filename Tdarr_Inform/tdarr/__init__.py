@@ -42,7 +42,6 @@ class Tdarr():
                     inform_dict[dbID] = []
                 if file_path not in inform_dict[dbID]:
                     inform_dict[dbID].append(file_path)
-                self.logger.error("Found Library ID %s" % dbID)
         return inform_dict
 
     def do_file_search(self, arr_file_path):

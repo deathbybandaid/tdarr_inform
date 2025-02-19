@@ -88,22 +88,22 @@ class CustomScript():
     @property
     def expected_paths_env_variables(self):
         return {
-                                            "sonarr": {
-                                                        "Download": ["sonarr_episodefile_path", "sonarr_deletedpaths"],
-                                                        "Rename": ["sonarr_series_path"],
-                                                        "EpisodeFileDelete": ["sonarr_episodefile_path"],
-                                                        "SeriesDelete": ["sonarr_series_path"]
-                                                        },
-                                            "radarr": {
-                                                        "Download": ["radarr_moviefile_path", "radarr_deletedpaths"],
-                                                        "Rename": ["radarr_moviefile_paths", "radarr_moviefile_previouspaths"],
-                                                        "MovieFileDelete": ["radarr_moviefile_path"],
-                                                        "MovieDelete": ["radarr_movie_path"]
-                                                        },
-                                            "whisparr": {
-                                                        "Download": ["whisparr_moviefile_path", "whisparr_deletedpaths"],
-                                                        "Rename": ["whisparr_moviefile_paths", "whisparr_moviefile_previouspaths"],
-                                                        "MovieFileDelete": ["whisparr_moviefile_path"],
-                                                        "MovieDelete": ["whisparr_movie_path"]
-                                                        }
-                                            }
+                "sonarr": {
+                            "Download": ["sonarr_episodefile_path", "sonarr_deletedpaths"],
+                            "Rename": ["sonarr_series_path"],
+                            "EpisodeFileDelete": ["sonarr_episodefile_path"],
+                            "SeriesDelete": ["sonarr_series_path"]
+                            },
+                "radarr": {
+                            "Download": ["radarr_moviefile_path", "radarr_deletedpaths"],
+                            "Rename": ["radarr_moviefile_paths", "radarr_moviefile_previouspaths"],
+                            "MovieFileDelete": ["radarr_moviefile_path"],
+                            "MovieDelete": ["radarr_movie_path"]
+                            },
+                "whisparr": {
+                            "Download": ["whisparr_moviefile_path", "whisparr_deletedpaths"],
+                            "Rename": ["whisparr_moviefile_paths", "whisparr_moviefile_previouspaths"],
+                            "MovieFileDelete": ["whisparr_moviefile_path"],
+                            "MovieDelete": ["whisparr_movie_path"]
+                            }
+                }

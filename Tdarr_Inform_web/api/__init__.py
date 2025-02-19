@@ -11,6 +11,8 @@ from .route_list import Route_List
 
 from .images import Images
 
+from .events import Events
+
 
 class Tdarr_Inform_web_API():
 
@@ -28,3 +30,5 @@ class Tdarr_Inform_web_API():
         self.route_list = Route_List(tdarr_inform)
 
         self.images = Images(tdarr_inform)
+
+        self.events = Events(tdarr_inform)

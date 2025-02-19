@@ -22,14 +22,19 @@ and doing a manual install of dependencies prior to install is still reccomended
 This will read the requirements.txt file and attempt to install missing dependencies.
 """
 from deps import Dependencies
-deps = Dependencies(SCRIPT_DIR, web=False)
+deps = Dependencies(SCRIPT_DIR, web=True if "server" in sys.argv else False)
 
 """
 Import the Tdarr_Inform CLI.
 """
 from Tdarr_Inform.cli import run
 
+"""
+`Tdarr_Inform_web` is part of, yet seperate from the fHDHR backend code. This gets imported while we are right here next to it.
+"""
+if "server" in sys.argv:
+    import Tdarr_Inform_web
 
 if __name__ == "__main__":
     """Calls Tdarr_Inform.cli running methods."""
-    sys.exit(run.main(SCRIPT_DIR, False, None))
+    sys.exit(run.main(SCRIPT_DIR, Tdarr_Inform_web if "server" in sys.argv else False, None))

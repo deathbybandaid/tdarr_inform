@@ -30,7 +30,7 @@ class Versions():
             # Sort the Version Info
             sorted_version_list = sorted(version_dict, key=lambda i: (version_dict[i]['type'], version_dict[i]['name']))
             sorted_version_dict = {
-                                    "Tdarr_Inform_web": version_dict["Tdarr_Inform_web"],
+                                    "Tdarr_Inform": version_dict["Tdarr_Inform"],
                                     "Tdarr_Inform_web": version_dict["Tdarr_Inform_web"]
                                     }
             for version_item in sorted_version_list:
