@@ -2,8 +2,7 @@ from flask import send_from_directory
 
 
 class Favicon_ICO():
-    # endpoints = ["/favicon.ico"]
-    endpoints = ["/faviconTODO.ico"]  # TODO
+    endpoints = ["/favicon.ico"]
     endpoint_name = "file_favicon_ico"
 
     def __init__(self, tdarr_inform):
