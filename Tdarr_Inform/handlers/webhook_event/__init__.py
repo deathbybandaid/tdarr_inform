@@ -14,6 +14,12 @@ class Webhook_Event():
 
         self.webhook_json = webhook_json
 
+        # process_event is True and we are running in a new thread
+        # the below checks were already done to give the arr a return of 200 or 501
+        if process_event:
+            self.process_information()
+            return
+
         if not self.arr:
             self.tdarr_inform.logger.error("Could not Detect a supported *arr")
             raise Exception("Could not Detect a supported *arr")
@@ -28,9 +34,6 @@ class Webhook_Event():
         if self.event_type not in self.valid_event_types:
             self.tdarr_inform.logger.error("%s %s is not a supported tdarr_inform Event." % (self.arr, self.event_type))
             raise Exception("%s %s is not a supported tdarr_inform Event." % (self.arr, self.event_type))
-
-        if process_event:
-            self.process_information()
 
     def process_information(self):
         file_path_list = self.get_file_path_list()
