@@ -4,6 +4,14 @@ This is a program that bridges the divide between Sonarr/Radarr/Whisparr and Tda
 Typically Tdarr operates by filesystem events, as well as periodic disk scanning.
 This program takes information from Sonarr/Radarr/Whisparr and "Informs" Tdarr of new/changed/deleted files.
 
+If you enjoy the code, consider buying me a Coke!
+
+<a href="https://www.paypal.com/donate?business=KEGJAGZK4NHWJ&currency_code=USD"
+target="_blank">
+<img src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" alt="PayPal this"
+title="PayPal – The safer, easier way to pay online!" border="0" />
+</a>
+
 ## Usage
 
 There are 3 ways to use this program.
