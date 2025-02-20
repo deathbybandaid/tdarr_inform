@@ -16,7 +16,7 @@ class Webhook_Event():
 
         # process_event is True and we are running in a new thread
         # the below checks were already done to give the arr a return of 200 or 501
-        if process_event:
+        if process_event and self.event_type != "Test":
             self.process_information()
             return
 
