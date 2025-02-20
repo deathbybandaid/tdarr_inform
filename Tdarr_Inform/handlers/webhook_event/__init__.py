@@ -5,7 +5,7 @@ from Tdarr_Inform.tdarr import Tdarr
 
 class Webhook_Event():
 
-    def __init__(self, tdarr_inform, webhook_json):
+    def __init__(self, tdarr_inform, webhook_json, process_event):
         """
         Handling for script being run in env mode
         """
@@ -29,6 +29,10 @@ class Webhook_Event():
             self.tdarr_inform.logger.error("%s %s is not a supported tdarr_inform Event." % (self.arr, self.event_type))
             raise Exception("%s %s is not a supported tdarr_inform Event." % (self.arr, self.event_type))
 
+        if process_event:
+            self.process_information()
+
+    def process_information(self):
         file_path_list = self.get_file_path_list()
 
         tdarr = Tdarr(self.tdarr_inform.config, self.tdarr_inform.logger, self.tdarr_inform.web)
