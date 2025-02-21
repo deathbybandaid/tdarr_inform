@@ -1,4 +1,5 @@
 import os
+import uuid
 
 
 class Tdarr():
@@ -7,6 +8,9 @@ class Tdarr():
         self.logger = logger
         self.config = settings
         self.web = web
+
+        self.event_uuid = str(uuid.uuid4())[:8]
+        self.logger.debug("Assigning Event Item uuid: %s" % self.event_uuid)
 
     def inform(self, inform_dict):
         for dbID in list(inform_dict.keys()):
@@ -18,30 +22,36 @@ class Tdarr():
         inform_dict = {}
 
         # Cycle through input list and append inform_dict
+        self.logger.info("Processing %s File/Directory path(s) against Tdarr API." % (len(file_path_list)))
+        event_counter = 1
+
         for file_path in file_path_list:
-            self.logger.info("Event Item: %s" % file_path)
-            self.logger.info("Searching tdarr API for item's library ID")
+            item_uuid = "%s-%s" % (self.event_uuid, event_counter)
+            self.logger.info("[%s] Event Item: %s" % (item_uuid, file_path))
 
             # Perform search by exact path. Often expect failure especially with new files
-            self.logger.info("Checking for Match by file path: %s" % file_path)
+            self.logger.info("[%s] Checking for Match by file path: %s" % (item_uuid, file_path))
             dbID = self.do_file_search(file_path)
 
             # No precise match found, search by directories starting with file's folder path and going backwards
             if not dbID:
-                self.logger.warning("No exact match found, searching for library ID from Reverse Recursive Directory matching")
-                dbID = self.do_reverse_recursive_directory_search(file_path)
+                self.logger.warning("[%s] No exact match found, searching for library ID from Reverse Recursive Directory matching" % (item_uuid))
+                dbID = self.do_reverse_recursive_directory_search(item_uuid, file_path)
 
             # Absolutely no match possible
             if not dbID:
-                self.logger.error("No match found for %s" % file_path)
+                self.logger.error("[%s] No match found for %s" % (item_uuid, file_path))
 
             # Success
             else:
-                self.logger.info("Found Library ID %s" % dbID)
+                self.logger.info("[%s] Found Library ID %s" % (item_uuid, dbID))
                 if dbID not in list(inform_dict.keys()):
                     inform_dict[dbID] = []
                 if file_path not in inform_dict[dbID]:
                     inform_dict[dbID].append(file_path)
+
+            event_counter += 1
+
         return inform_dict
 
     def do_file_search(self, arr_file_path):
@@ -66,12 +76,12 @@ class Tdarr():
             return None
         return dbIDs[0]
 
-    def do_reverse_recursive_directory_search(self, arr_file_path):
+    def do_reverse_recursive_directory_search(self, item_uuid, arr_file_path):
         dbID = None
         arr_dir_path = os.path.dirname(arr_file_path)
         checked_paths = []
         while self.check_path(arr_dir_path, checked_paths):
-            self.logger.info("Checking for Match by directory path: %s" % arr_dir_path)
+            self.logger.info("[%s] Checking for Match by directory path: %s" % (item_uuid, arr_dir_path))
             dbID = self.do_file_search(arr_dir_path)
 
             # Found
@@ -79,7 +89,7 @@ class Tdarr():
                 break
 
             # Continue search
-            self.logger.warn("No match found for directory path: %s" % arr_dir_path)
+            self.logger.warn("[%s] No match found for directory path: %s" % (item_uuid, arr_dir_path))
             checked_paths.append(arr_dir_path)
             arr_dir_path = os.path.dirname(arr_dir_path)
 
@@ -107,9 +117,9 @@ class Tdarr():
                       }
                     }
                   }
-        self.logger.info("Sending %s path(s) to tdarr with Library ID %s." % (len(file_paths), dbID))
+        self.logger.info("[%s] Sending %s path(s) to tdarr with Library ID %s." % (self.event_uuid, len(file_paths), dbID))
         response = self.web.post("%s/api/v2/scan-files" % self.address_without_creds, json=payload, headers=headers)
-        self.logger.info("Tdarr response: %s" % response.text)
+        self.logger.info("[%s] Tdarr response: %s" % (self.event_uuid, response.text))
 
     @property
     def address(self):
