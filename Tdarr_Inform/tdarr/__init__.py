@@ -27,6 +27,7 @@ class Tdarr():
 
         for file_path in file_path_list:
             item_uuid = "%s-%s" % (self.event_uuid, event_counter)
+            event_counter += 1
             self.logger.info("[%s] Event Item: %s" % (item_uuid, file_path))
 
             # Perform search by exact path. Often expect failure especially with new files
@@ -49,8 +50,6 @@ class Tdarr():
                     inform_dict[dbID] = []
                 if file_path not in inform_dict[dbID]:
                     inform_dict[dbID].append(file_path)
-
-            event_counter += 1
 
         return inform_dict
 
