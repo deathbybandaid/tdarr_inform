@@ -21,11 +21,19 @@ class Tdarr():
         # Dedupe dbID/file_path combinations
         inform_dict = {}
 
+        # Dedupe the list
+        self.logger.info("[%s] Found %s File/Directory path(s) in webhook. Running De-Duplication." % (self.event_uuid, len(file_path_list)))
+        deduplicated_list = []
+        for file_path in file_path_list:
+            if file_path not in deduplicated_list:
+                deduplicated_list.append(file_path)
+        self.logger.info("[%s] Pre-Dedupe Count: %s, Deduped Count: %s" % (self.event_uuid, len(file_path_list), len(deduplicated_list)))
+
         # Cycle through input list and append inform_dict
-        self.logger.info("Processing %s File/Directory path(s) against Tdarr API." % (len(file_path_list)))
+        self.logger.info("[%s] Processing %s File/Directory path(s) against Tdarr API." % (self.event_uuid, len(deduplicated_list)))
         event_counter = 1
 
-        for file_path in file_path_list:
+        for file_path in deduplicated_list:
             item_uuid = "%s-%s" % (self.event_uuid, event_counter)
             event_counter += 1
             self.logger.info("[%s] Event Item: %s" % (item_uuid, file_path))
