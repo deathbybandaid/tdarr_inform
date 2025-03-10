@@ -113,7 +113,7 @@ class Versions():
             return False
         with open(path) as f:
             for line in f:
-                if re.match("\d+:[\w=]+:/docker(-[ce]e)?/\w+", line):
+                if re.match(r"\d+:[\w=]+:/docker(-[ce]e)?/\w+", line):
                     return True
             return False
 
