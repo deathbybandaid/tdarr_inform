@@ -14,14 +14,15 @@ title="PayPal – The safer, easier way to pay online!" border="0" />
 
 ## Usage
 
-There are 3 ways to use this program.
+There are 4 ways to use this program.
+
 * The original way uses the Custom Script functionality of Sonarr/Radarr/Whisparr.
 * You can also run it via CLI, but this is mostly for testing, and I haven't documented this yet.
 * The NEW MODE is to run it with the `--mode server` argument.
+* You can use this within Docker where it automatically runs in Server Mode.
 
-NOTE:
-* Sonarr/Radarr/Whisparr file paths must be accessible to Tdarr. This script does not currently "translate" paths. This may be added in the future.
-
+> [!NOTE]
+> Sonarr/Radarr/Whisparr file paths must be accessible to Tdarr. This script does not currently "translate" paths. This may be added in the future.
 
 ## Installation
 
@@ -50,6 +51,7 @@ For Standalone, you are done. For server mode
 ### Standalone Script
 
 ## Add to Sonarr/Radarr/Whisparr
+
 1) Go to Settings/Connect
 2) Add
 3) Custom Script
@@ -58,8 +60,38 @@ For Standalone, you are done. For server mode
 
 6) You might see permissions issues for the script if your sonarr user doesnt have permission to run it. `chown` it to your needs.
 
+## Docker
 
-# Why this exists
+This can be used in Server Mode from within Docker where it will automatically create a `/config/config.ini` file if needed. It is important to mount the config folder elsewhere so your settings don't get lost if this is updated.
+
+The examples listed below are very basic, and will run if tdarr is also running locally. In reality you should attach to the same network as tdarr (and update the settings to point at the correct hostname etc).
+
+### docker-compose (recommended)
+
+```yml
+services:
+  tdarr_inform:
+    image: ghcr.io/deathbybandaid/tdarr_inform:latest
+    restart: unless-stopped
+    network_mode: host
+    ports:
+      - "5004:5004"
+    volumes:
+      - "/path/to/config:/config"
+```
+
+### docker cli
+
+```sh
+docker run -d \
+  -p 5004:5004 \
+  -v /path/to/config:/config \
+  --restart unless-stopped \
+  --network=host \
+  ghcr.io/deathbybandaid/tdarr_inform:latest
+```
+
+## Why this exists
 
 Tdarr is able to listen to filesystem events and/or scan the filesystem periodically.
 
