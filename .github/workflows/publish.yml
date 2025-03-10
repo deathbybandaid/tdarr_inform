@@ -84,8 +84,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           # Support everything in https://hub.docker.com/_/python
-          # linux/386, linux/ppc64le, linux/arm/v7 removed due to compatibility in pip
-          platforms: linux/amd64, linux/arm/v6, linux/arm64/v8, linux/s390x
+          # linux/386, linux/ppc64le, linux/arm/v6, linux/arm/v7 removed due to compatibility in pip
+          platforms: linux/amd64, linux/arm64/v8, linux/s390x
 
       # This step generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built. It increases supply chain security for people who consume the image. For more information, see [Using artifact attestations to establish provenance for builds](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations/using-artifact-attestations-to-establish-provenance-for-builds).
       - name: Generate artifact attestation for GHCR
