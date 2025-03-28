@@ -74,6 +74,7 @@ services:
     image: ghcr.io/deathbybandaid/tdarr_inform:latest
     restart: unless-stopped
     network_mode: host
+    user: "1000:1000" # This is the same as the default
     ports:
       - "5004:5004"
     volumes:
@@ -90,6 +91,54 @@ docker run -d \
   --network=host \
   ghcr.io/deathbybandaid/tdarr_inform:latest
 ```
+
+## Config file
+
+This is a copy of the file created by the `--config` option:
+
+<details>
+<summary>Default config</summary>
+
+```ini
+[logging]
+level = INFO
+format = None
+
+[database]
+type = sqlite
+driver = None
+user = None
+pass = None
+host = None
+port = None
+name = None
+
+[main]
+cache_dir = None
+
+[tdarr_inform]
+address = 0.0.0.0
+port = 5004
+require_auth = None
+friendlyname = tdarr_inform
+versions_check_interval = 10800
+humanized_time_granularity = second
+
+[tdarr]
+address = localhost
+port = 8265
+ssl = None
+accept_root_drive_path = 1
+
+[web_ui]
+theme = None
+access_level = None
+auto_page_refresh = 5
+pages_to_refresh = None
+```
+
+</details>
+
 
 ## Why this exists
 
