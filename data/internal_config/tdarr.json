@@ -19,6 +19,11 @@
                     "value": true,
                     "config_file": true,
                     "config_web": true
+                  },
+          "force_windows_paths":{
+                    "value": false,
+                    "config_file": true,
+                    "config_web": true
                 }
   }
 }

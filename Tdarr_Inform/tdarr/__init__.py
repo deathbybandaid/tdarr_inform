@@ -1,5 +1,6 @@
 import os
 import uuid
+from pathlib import PureWindowsPath
 
 
 class Tdarr():
@@ -25,6 +26,8 @@ class Tdarr():
         self.logger.info("[%s] Found %s File/Directory path(s) in webhook. Running De-Duplication." % (self.event_uuid, len(file_path_list)))
         deduplicated_list = []
         for file_path in file_path_list:
+            if self.force_windows_paths:
+                file_path = PureWindowsPath(file_path)
             if file_path not in deduplicated_list:
                 deduplicated_list.append(file_path)
         self.logger.info("[%s] Pre-Dedupe Count: %s, Deduped Count: %s" % (self.event_uuid, len(file_path_list), len(deduplicated_list)))
@@ -36,6 +39,7 @@ class Tdarr():
         for file_path in deduplicated_list:
             item_uuid = "%s-%s" % (self.event_uuid, event_counter)
             event_counter += 1
+
             self.logger.info("[%s] Event Item: %s" % (item_uuid, file_path))
 
             # Perform search by exact path. Often expect failure especially with new files
@@ -127,6 +131,10 @@ class Tdarr():
         self.logger.info("[%s] Sending %s path(s) to tdarr with Library ID %s." % (self.event_uuid, len(file_paths), dbID))
         response = self.web.post("%s/api/v2/scan-files" % self.address_without_creds, json=payload, headers=headers)
         self.logger.info("[%s] Tdarr response: %s" % (self.event_uuid, response.text))
+
+    @property
+    def force_windows_paths(self):
+        return self.config.dict["tdarr"]["force_windows_paths"]
 
     @property
     def address(self):
