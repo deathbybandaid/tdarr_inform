@@ -24,7 +24,7 @@
                     "value": "forward",
                     "config_file": true,
                     "config_web": true,
-                    "valid_options": "forward,back"
+                    "valid_options": "forward,back,unaltered"
                 }
   }
 }

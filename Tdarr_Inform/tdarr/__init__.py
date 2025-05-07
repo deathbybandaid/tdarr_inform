@@ -136,15 +136,20 @@ class Tdarr():
 
     def format_path_slash(self, file_path):
         """
-        Microsoft Windows uses a backslash character between folder names while almost every other computer uses a forward slash
+        Windows uses a backslash character between folder names while almost every other computer uses a forward slash
+        The config setting will either force backslashes, forward slashes, or not alter the request from *arr
         """
-        file_path = Path(file_path)
+
         if self.path_slash_format == "back":
+            file_path = Path(file_path)
             file_path = PureWindowsPath(file_path)
         elif self.path_slash_format == "forward":
+            file_path = Path(file_path)
+            file_path = file_path
+        elif self.path_slash_format == "unaltered":
             file_path = file_path
         else:
-            file_path = file_path
+            file_path = Path(file_path)
         return str(file_path)
 
     @property
