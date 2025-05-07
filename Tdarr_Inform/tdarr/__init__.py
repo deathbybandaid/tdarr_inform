@@ -88,7 +88,7 @@ class Tdarr():
 
     def do_reverse_recursive_directory_search(self, item_uuid, arr_file_path):
         dbID = None
-        arr_dir_path = os.path.dirname(arr_file_path)
+        arr_dir_path = self.get_parent_path(arr_file_path)
         checked_paths = []
         while self.check_path(arr_dir_path, checked_paths):
             self.logger.info("[%s] Checking for Match by directory path: %s" % (item_uuid, arr_dir_path))
@@ -101,9 +101,15 @@ class Tdarr():
             # Continue search
             self.logger.warn("[%s] No match found for directory path: %s" % (item_uuid, arr_dir_path))
             checked_paths.append(arr_dir_path)
-            arr_dir_path = os.path.dirname(arr_dir_path)
+            arr_dir_path = self.get_parent_path(arr_dir_path)
 
         return dbID
+
+    def get_parent_path(self, file_path):
+        file_path = Path(file_path)
+        file_path = os.path.dirname(file_path)
+        file_path = self.format_path_slash(file_path)
+        return file_path
 
     def check_path(self, arr_dir_path, checked_paths):
         if arr_dir_path in checked_paths:
