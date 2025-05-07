@@ -20,10 +20,11 @@
                     "config_file": true,
                     "config_web": true
                   },
-          "force_windows_paths":{
-                    "value": false,
+          "path_slash_format":{
+                    "value": "forward",
                     "config_file": true,
-                    "config_web": true
+                    "config_web": true,
+                    "valid_options": "forward,back"
                 }
   }
 }

@@ -1,6 +1,6 @@
 import os
 import uuid
-from pathlib import PureWindowsPath
+from pathlib import Path, PureWindowsPath
 
 
 class Tdarr():
@@ -26,8 +26,7 @@ class Tdarr():
         self.logger.info("[%s] Found %s File/Directory path(s) in webhook. Running De-Duplication." % (self.event_uuid, len(file_path_list)))
         deduplicated_list = []
         for file_path in file_path_list:
-            if self.force_windows_paths:
-                file_path = str(PureWindowsPath(file_path))
+            file_path = self.format_path_slash(file_path)
             if file_path not in deduplicated_list:
                 deduplicated_list.append(file_path)
         self.logger.info("[%s] Pre-Dedupe Count: %s, Deduped Count: %s" % (self.event_uuid, len(file_path_list), len(deduplicated_list)))
@@ -132,9 +131,22 @@ class Tdarr():
         response = self.web.post("%s/api/v2/scan-files" % self.address_without_creds, json=payload, headers=headers)
         self.logger.info("[%s] Tdarr response: %s" % (self.event_uuid, response.text))
 
+    def format_path_slash(self, file_path):
+        """
+        Microsoft Windows uses a backslash character between folder names while almost every other computer uses a forward slash
+        """
+        file_path = Path(file_path)
+        if self.path_slash_format == "back":
+            file_path = PureWindowsPath(file_path)
+        elif self.path_slash_format == "forward":
+            file_path = file_path
+        else:
+            file_path = file_path
+        return str(file_path)
+
     @property
-    def force_windows_paths(self):
-        return self.config.dict["tdarr"]["force_windows_paths"]
+    def path_slash_format(self):
+        return self.config.dict["tdarr"]["path_slash_format"]
 
     @property
     def address(self):
