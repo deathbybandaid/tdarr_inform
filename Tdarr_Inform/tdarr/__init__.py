@@ -26,7 +26,6 @@ class Tdarr():
         self.logger.info("[%s] Found %s File/Directory path(s) in webhook. Running De-Duplication." % (self.event_uuid, len(file_path_list)))
         deduplicated_list = []
         for file_path in file_path_list:
-            file_path = self.format_path_slash(file_path)
             if file_path not in deduplicated_list:
                 deduplicated_list.append(file_path)
         self.logger.info("[%s] Pre-Dedupe Count: %s, Deduped Count: %s" % (self.event_uuid, len(file_path_list), len(deduplicated_list)))
@@ -36,14 +35,15 @@ class Tdarr():
         event_counter = 1
 
         for file_path in deduplicated_list:
+            formatted_file_path = self.format_path_slash(file_path)
             item_uuid = "%s-%s" % (self.event_uuid, event_counter)
             event_counter += 1
 
-            self.logger.info("[%s] Event Item: %s" % (item_uuid, file_path))
+            self.logger.info("[%s] Event Item: %s" % (item_uuid, formatted_file_path))
 
             # Perform search by exact path. Often expect failure especially with new files
-            self.logger.info("[%s] Checking for Match by file path: %s" % (item_uuid, file_path))
-            dbID = self.do_file_search(file_path)
+            self.logger.info("[%s] Checking for Match by file path: %s" % (item_uuid, formatted_file_path))
+            dbID = self.do_file_search(formatted_file_path)
 
             # No precise match found, search by directories starting with file's folder path and going backwards
             if not dbID:
@@ -52,15 +52,15 @@ class Tdarr():
 
             # Absolutely no match possible
             if not dbID:
-                self.logger.error("[%s] No match found for %s" % (item_uuid, file_path))
+                self.logger.error("[%s] No match found for %s" % (item_uuid, formatted_file_path))
 
             # Success
             else:
                 self.logger.info("[%s] Found Library ID %s" % (item_uuid, dbID))
                 if dbID not in list(inform_dict.keys()):
                     inform_dict[dbID] = []
-                if file_path not in inform_dict[dbID]:
-                    inform_dict[dbID].append(file_path)
+                if formatted_file_path not in inform_dict[dbID]:
+                    inform_dict[dbID].append(formatted_file_path)
 
         return inform_dict
 
@@ -88,28 +88,25 @@ class Tdarr():
 
     def do_reverse_recursive_directory_search(self, item_uuid, arr_file_path):
         dbID = None
-        arr_dir_path = self.get_parent_path(arr_file_path)
+        arr_dir_path = os.path.dirname(arr_file_path)
+        formatted_file_path = self.format_path_slash(arr_file_path)
         checked_paths = []
-        while self.check_path(arr_dir_path, checked_paths):
-            self.logger.info("[%s] Checking for Match by directory path: %s" % (item_uuid, arr_dir_path))
-            dbID = self.do_file_search(arr_dir_path)
+        while self.check_path(formatted_file_path, checked_paths):
+
+            self.logger.info("[%s] Checking for Match by directory path: %s" % (item_uuid, formatted_file_path))
+            dbID = self.do_file_search(formatted_file_path)
 
             # Found
             if dbID:
                 break
 
             # Continue search
-            self.logger.warn("[%s] No match found for directory path: %s" % (item_uuid, arr_dir_path))
-            checked_paths.append(arr_dir_path)
-            arr_dir_path = self.get_parent_path(arr_dir_path)
+            self.logger.warn("[%s] No match found for directory path: %s" % (item_uuid, formatted_file_path))
+            checked_paths.append(formatted_file_path)
+            arr_dir_path = os.path.dirname(arr_dir_path)
+            formatted_file_path = self.format_path_slash(arr_file_path)
 
         return dbID
-
-    def get_parent_path(self, file_path):
-        file_path = Path(file_path)
-        file_path = os.path.dirname(file_path)
-        file_path = self.format_path_slash(file_path)
-        return file_path
 
     def check_path(self, arr_dir_path, checked_paths):
         if arr_dir_path in checked_paths:
