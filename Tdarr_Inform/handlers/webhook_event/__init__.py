@@ -62,15 +62,18 @@ class Webhook_Event():
         if not len(webhook_file_paths):
             self.tdarr_inform.logger.warn("No File paths extracted from expected keys from Webhook Event, checking fallback keys.")
             fallback_keys = [x for x in list(self.expected_webhook_info_base[self.arr]["fallback"].keys()) if x in list(self.webhook_json.keys())]
-            for file_entry in fallback_keys:
-                file_entry_path_list = self.webhook_json[file_entry]
-                if not isinstance(file_entry_path_list, list):
-                    file_entry_path_list = [file_entry_path_list]
-                for file_entry_path in file_entry_path_list:
-                    actual_path_keys = [x for x in self.expected_webhook_info_base[self.arr][self.event_type][file_entry] if x in list(file_entry_path.keys())]
-                    for path_key in actual_path_keys:
-                        path_append = file_entry_path[path_key]
-                        webhook_file_paths.append(path_append)
+            try:
+                for file_entry in fallback_keys:
+                    file_entry_path_list = self.webhook_json[file_entry]
+                    if not isinstance(file_entry_path_list, list):
+                        file_entry_path_list = [file_entry_path_list]
+                    for file_entry_path in file_entry_path_list:
+                        actual_path_keys = [x for x in self.expected_webhook_info_base[self.arr][self.event_type][file_entry] if x in list(file_entry_path.keys())]
+                        for path_key in actual_path_keys:
+                            path_append = file_entry_path[path_key]
+                            webhook_file_paths.append(path_append)
+            except KeyError:
+                self.tdarr_inform.logger.error("No File paths extracted from fallback keys.")
 
         if not len(webhook_file_paths):
             self.tdarr_inform.logger.error("No File paths retrieved from Webhook Event")
