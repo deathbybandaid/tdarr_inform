@@ -89,7 +89,7 @@ class Tdarr():
     def do_reverse_recursive_directory_search(self, item_uuid, arr_file_path):
         dbID = None
         arr_dir_path = os.path.dirname(arr_file_path)
-        formatted_file_path = self.format_path_slash(arr_file_path)
+        formatted_file_path = self.format_path_slash(arr_dir_path)
         checked_paths = []
         while self.check_path(formatted_file_path, checked_paths):
 
