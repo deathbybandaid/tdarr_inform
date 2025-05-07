@@ -19,6 +19,12 @@
                     "value": true,
                     "config_file": true,
                     "config_web": true
+                  },
+          "path_slash_format":{
+                    "value": "forward",
+                    "config_file": true,
+                    "config_web": true,
+                    "valid_options": "forward,back,unaltered"
                 }
   }
 }
