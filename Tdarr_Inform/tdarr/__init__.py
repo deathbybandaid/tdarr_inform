@@ -39,10 +39,13 @@ class Tdarr():
             item_uuid = "%s-%s" % (self.event_uuid, event_counter)
             event_counter += 1
 
-            self.logger.info("[%s] Event Item: %s" % (item_uuid, formatted_file_path))
+            self.logger.info("[%s] Event Item: %s" % (item_uuid, file_path))
+
+            if file_path != formatted_file_path:
+                self.logger.info("[%s] Config Setting for %s slash rewrites to: %s" % (item_uuid, self.path_slash_format, formatted_file_path))
 
             # Perform search by exact path. Often expect failure especially with new files
-            self.logger.info("[%s] Checking for Match by file path: %s" % (item_uuid, formatted_file_path))
+            self.logger.info("[%s] Checking for Exact Match by file path: %s" % (item_uuid, formatted_file_path))
             dbID = self.do_file_search(formatted_file_path)
 
             # No precise match found, search by directories starting with file's folder path and going backwards
