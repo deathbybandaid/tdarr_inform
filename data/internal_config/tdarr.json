@@ -25,6 +25,12 @@
                     "config_file": true,
                     "config_web": true,
                     "valid_options": "forward,back,unaltered"
+                  },
+          "path_slash_double":{
+                    "value": false,
+                    "config_file": true,
+                    "config_web": true,
+                    "valid_options": "bool"
                 }
   }
 }

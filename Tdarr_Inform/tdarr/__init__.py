@@ -150,7 +150,14 @@ class Tdarr():
             file_path = file_path
         else:
             file_path = Path(file_path)
+        if self.path_slash_double:
+            file_path = file_path.replace("\\", "\\\\")
+            file_path = file_path.replace("/", "//")
         return str(file_path)
+
+    @property
+    def path_slash_double(self):
+        return self.config.dict["tdarr"]["path_slash_double"]
 
     @property
     def path_slash_format(self):
