@@ -104,7 +104,7 @@ class Tdarr():
             self.logger.warn("[%s] No match found for directory path: %s" % (item_uuid, formatted_file_path))
             checked_paths.append(formatted_file_path)
             arr_dir_path = os.path.dirname(arr_dir_path)
-            formatted_file_path = self.format_path_slash(arr_file_path)
+            formatted_file_path = self.format_path_slash(arr_dir_path)
 
         return dbID
 
