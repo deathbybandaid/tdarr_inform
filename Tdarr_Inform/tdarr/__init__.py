@@ -27,7 +27,7 @@ class Tdarr():
         deduplicated_list = []
         for file_path in file_path_list:
             if self.force_windows_paths:
-                file_path = PureWindowsPath(file_path)
+                file_path = str(PureWindowsPath(file_path))
             if file_path not in deduplicated_list:
                 deduplicated_list.append(file_path)
         self.logger.info("[%s] Pre-Dedupe Count: %s, Deduped Count: %s" % (self.event_uuid, len(file_path_list), len(deduplicated_list)))
