@@ -154,7 +154,9 @@ class Tdarr():
     def check_root_path(self, arr_dir_path):
         if arr_dir_path == os.path.abspath(os.sep):
             return True
-        elif arr_dir_path.endswith(":\\"):
+        elif arr_dir_path.endswith(":\\") or arr_dir_path.endswith(":/"):
+            return True
+        elif arr_dir_path.endswith("\\") or arr_dir_path.endswith("/"):
             return True
         return False
 
