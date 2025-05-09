@@ -156,7 +156,11 @@ class Tdarr():
             return True
         elif arr_dir_path.endswith(":\\") or arr_dir_path.endswith(":/"):
             return True
+        elif arr_dir_path.endswith(":\\") or arr_dir_path.endswith(":/"):
+            return True
         elif arr_dir_path.endswith("\\") or arr_dir_path.endswith("/"):
+            return True
+        elif arr_dir_path.endswith(":"):
             return True
         return False
 
