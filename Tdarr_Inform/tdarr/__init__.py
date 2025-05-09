@@ -35,15 +35,33 @@ class Tdarr():
         event_counter = 1
 
         for file_path in deduplicated_list:
-            formatted_file_path = self.format_path_slash(file_path)
             item_uuid = "%s-%s" % (self.event_uuid, event_counter)
             event_counter += 1
 
-            self.logger.info("[%s] Event Item: %s" % (item_uuid, formatted_file_path))
+            self.logger.info("[%s] Event Item: %s" % (item_uuid, file_path))
 
-            # Perform search by exact path. Often expect failure especially with new files
-            self.logger.info("[%s] Checking for Match by file path: %s" % (item_uuid, formatted_file_path))
-            dbID = self.do_file_search(formatted_file_path)
+            formatted_file_paths = []
+            if self.path_slash_format == "unaltered":
+                formatted_file_paths.append(file_path)
+            elif self.path_slash_format == "both":
+                self.logger.info("[%s] Config Setting will use both forward and back slashes for file paths" % (item_uuid))
+                for slash_format in ["forward", "back"]:
+                    formatted_file_paths.append(self.format_path_slash(file_path, slash_format))
+            else:
+                formatted_file_path = self.format_path_slash(file_path, self.path_slash_format)
+                if file_path != formatted_file_path:
+                    self.logger.info("[%s] Config Setting for %s slash rewrites to: %s" % (item_uuid, self.path_slash_format, formatted_file_path))
+                formatted_file_paths.append(formatted_file_path)
+
+            dbID = None
+            for formatted_file_path in formatted_file_paths:
+
+                # Perform search by exact path. Often expect failure especially with new files
+                if not dbID:
+                    self.logger.info("[%s] Checking for Exact Match by file path: %s" % (item_uuid, formatted_file_path))
+                    dbID = self.do_file_search(formatted_file_path)
+                if dbID:
+                    self.logger.warning("[%s] Exact match found!" % (item_uuid))
 
             # No precise match found, search by directories starting with file's folder path and going backwards
             if not dbID:
@@ -87,37 +105,64 @@ class Tdarr():
         return dbIDs[0]
 
     def do_reverse_recursive_directory_search(self, item_uuid, arr_file_path):
-        dbID = None
-        arr_dir_path = os.path.dirname(arr_file_path)
-        formatted_file_path = self.format_path_slash(arr_dir_path)
-        checked_paths = []
-        while self.check_path(formatted_file_path, checked_paths):
 
-            self.logger.info("[%s] Checking for Match by directory path: %s" % (item_uuid, formatted_file_path))
-            dbID = self.do_file_search(formatted_file_path)
+        dbID = None
+
+        # Get parent directory
+        arr_dir_path = os.path.dirname(arr_file_path)
+
+        while not dbID:
+
+            formatted_file_paths = []
+            if self.path_slash_format == "unaltered":
+                formatted_file_paths.append(arr_dir_path)
+            elif self.path_slash_format == "both":
+                self.logger.info("[%s] Config Setting will use both forward and back slashes for file paths" % (item_uuid))
+                for slash_format in ["forward", "back"]:
+                    formatted_file_paths.append(self.format_path_slash(arr_dir_path, slash_format))
+            else:
+                formatted_file_path = self.format_path_slash(arr_dir_path, self.path_slash_format)
+                if arr_dir_path != formatted_file_path:
+                    self.logger.info("[%s] Config Setting for %s slash rewrites to: %s" % (item_uuid, self.path_slash_format, formatted_file_path))
+                formatted_file_paths.append(formatted_file_path)
+
+            for formatted_file_path in formatted_file_paths:
+
+                if not dbID:
+                    if not self.accept_root_drive_path:
+                        if self.check_root_path(formatted_file_path):
+                            self.logger.info("[%s] Config setting prohibits scanning root directories. Not Checking: %s" % (item_uuid, formatted_file_path))
+                            break
+
+                    self.logger.info("[%s] Checking for Match by directory path: %s" % (item_uuid, formatted_file_path))
+                    dbID = self.do_file_search(formatted_file_path)
+
+                # Found
+                if dbID:
+                    break
+
+                self.logger.warn("[%s] No match found for directory path: %s" % (item_uuid, formatted_file_path))
 
             # Found
             if dbID:
                 break
 
-            # Continue search
-            self.logger.warn("[%s] No match found for directory path: %s" % (item_uuid, formatted_file_path))
-            checked_paths.append(formatted_file_path)
             arr_dir_path = os.path.dirname(arr_dir_path)
-            formatted_file_path = self.format_path_slash(arr_dir_path)
 
         return dbID
 
-    def check_path(self, arr_dir_path, checked_paths):
-        if arr_dir_path in checked_paths:
-            return False
-        if not self.config.dict['tdarr']["accept_root_drive_path"]:
-            if arr_dir_path != os.path.abspath(os.sep):
-                return True
-            elif not arr_dir_path.endswith(":\\"):
-                return True
-            return False
-        return True
+    def check_root_path(self, arr_dir_path):
+        if arr_dir_path == os.path.abspath(os.sep):
+            return True
+        elif arr_dir_path.endswith(":\\") or arr_dir_path.endswith(":/"):
+            return True
+        elif arr_dir_path.endswith(":\\") or arr_dir_path.endswith(":/"):
+            return True
+        elif arr_dir_path.endswith("\\") or arr_dir_path.endswith("/"):
+            return True
+        elif arr_dir_path.endswith(":"):
+            return True
+        return False
 
     def do_tdarr_inform(self, dbID, file_paths):
         headers = {"content-type": "application/json"}
@@ -134,23 +179,28 @@ class Tdarr():
         response = self.web.post("%s/api/v2/scan-files" % self.address_without_creds, json=payload, headers=headers)
         self.logger.info("[%s] Tdarr response: %s" % (self.event_uuid, response.text))
 
-    def format_path_slash(self, file_path):
+    def format_path_slash(self, file_path, path_slash_format):
         """
         Windows uses a backslash character between folder names while almost every other computer uses a forward slash
         The config setting will either force backslashes, forward slashes, or not alter the request from *arr
         """
 
-        if self.path_slash_format == "back":
+        if path_slash_format == "back":
             file_path = Path(file_path)
             file_path = PureWindowsPath(file_path)
-        elif self.path_slash_format == "forward":
+            file_path = str(file_path).replace("/", "\\")
+        elif path_slash_format == "forward":
             file_path = Path(file_path)
-            file_path = file_path
-        elif self.path_slash_format == "unaltered":
+            file_path = str(file_path).replace("\\", "/")
+        elif path_slash_format == "unaltered":
             file_path = file_path
         else:
             file_path = Path(file_path)
         return str(file_path)
+
+    @property
+    def accept_root_drive_path(self):
+        return self.config.dict["tdarr"]["accept_root_drive_path"]
 
     @property
     def path_slash_format(self):
