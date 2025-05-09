@@ -145,7 +145,8 @@ class Tdarr():
 
         if self.path_slash_format == "back":
             file_path = Path(file_path)
-            file_path = PureWindowsPath(file_path).replace("/", "\\")
+            file_path = PureWindowsPath(file_path)
+            file_path = str(file_path).replace("/", "\\")
         elif self.path_slash_format == "forward":
             file_path = Path(file_path)
             file_path = file_path
