@@ -187,7 +187,7 @@ class Tdarr():
             file_path = str(file_path).replace("/", "\\")
         elif path_slash_format == "forward":
             file_path = Path(file_path)
-            file_path = file_path
+            file_path = str(file_path).replace("\\", "/")
         elif path_slash_format == "unaltered":
             file_path = file_path
         else:
