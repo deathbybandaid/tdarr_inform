@@ -215,6 +215,10 @@ class Tdarr():
         return self.config.dict["tdarr"]["port"]
 
     @property
+    def api_key(self):
+        return self.config.dict["tdarr"]["api_key"]
+
+    @property
     def proto(self):
         return "https://" if self.config.dict['tdarr']["ssl"] else "http://"
 
