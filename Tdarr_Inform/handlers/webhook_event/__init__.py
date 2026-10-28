@@ -36,7 +36,13 @@ class Webhook_Event():
             raise Exception("%s %s is not a supported tdarr_inform Event." % (self.arr, self.event_type))
 
     def process_information(self):
+        if self.event_type not in self.valid_event_types:
+            self.tdarr_inform.logger.info("Ignoring %s event (not a file-bearing event type)" % self.event_type)
+            return
         file_path_list = self.get_file_path_list()
+        if not file_path_list:
+            self.tdarr_inform.logger.info("No file paths in %s event; nothing to inform." % self.event_type)
+            return
 
         tdarr = Tdarr(self.tdarr_inform.config, self.tdarr_inform.logger, self.tdarr_inform.web)
         inform_dict = tdarr.get_inform_dict(file_path_list)
@@ -76,8 +82,8 @@ class Webhook_Event():
                 self.tdarr_inform.logger.error("No File paths extracted from fallback keys.")
 
         if not len(webhook_file_paths):
-            self.tdarr_inform.logger.error("No File paths retrieved from Webhook Event")
-            raise Exception("No File paths retrieved from Webhook Event")
+            self.tdarr_inform.logger.info("No File paths retrieved from Webhook Event; skipping.")
+            return webhook_file_paths
 
         return webhook_file_paths
 
