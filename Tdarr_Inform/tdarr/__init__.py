@@ -90,7 +90,7 @@ class Tdarr():
                             "greaterThanGB": 0
                             }
                     }
-        headers = {"content-type": "application/json"}
+        headers = self.request_headers
         response = self.web.post("%s/api/v2/search-db" % self.address_without_creds, json=payload, headers=headers)
         try:
             response_json = response.json()
@@ -165,7 +165,7 @@ class Tdarr():
         return False
 
     def do_tdarr_inform(self, dbID, file_paths):
-        headers = {"content-type": "application/json"}
+        headers = self.request_headers
         payload = {
                     "data": {
                       "scanConfig": {
@@ -217,6 +217,13 @@ class Tdarr():
     @property
     def api_key(self):
         return self.config.dict["tdarr"]["api_key"]
+
+    @property
+    def request_headers(self):
+        headers = {"content-type": "application/json"}
+        if self.api_key:
+            headers["x-api-key"] = self.api_key
+        return headers
 
     @property
     def proto(self):
